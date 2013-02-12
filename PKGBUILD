@@ -40,8 +40,8 @@ pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.7
-pkgver=3.7.6
-pkgrel=2
+pkgver=3.7.7
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
 license=('GPL2')
@@ -73,7 +73,7 @@ source=(
         )
         
 sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
-            'fd75d3ff0cc46f1f025eb2129c1e60ad305242efd4df01662668a82fee36bb2f'
+            '8c84f79faa95f77ac2890b341e658e93874540021ca44f1f32f322bfb776c0bd'
             '525d31f777e650f0bed604a66e8cbbb2993fe56cd2bc0b36a1dc8f1f8a3d24b7'
             '11183d20458fe662ceffcc2a0caa14200a0ec630e62ec109ad258cb4e005df5e'
             '6dc36a8f33009bb5942dfdfc735661d2306354897b9731b4b0ef2a2615ee2e7d'
@@ -216,7 +216,7 @@ build() {
 }
 
 package_linux-shadow() {
-_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
+_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support, Intel Core2/Newer Xeon optimized.'
 pkgdesc="${_Kpkgdesc}"
 depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
 optdepends=('crda: to set the correct wireless channels of your country')
@@ -416,4 +416,4 @@ rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfi
 }
 
 # Global pkgdesc and depends are here so that they will be picked up by AUR
-pkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
+pkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support, Intel Core2/Newer Xeon optimized.'
