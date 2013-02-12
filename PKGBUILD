@@ -216,7 +216,7 @@ build() {
 }
 
 package_linux-shadow() {
-_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support, Intel Core2/Newer Xeon optimized.'
+_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
 pkgdesc="${_Kpkgdesc}"
 depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
 optdepends=('crda: to set the correct wireless channels of your country')
@@ -416,4 +416,4 @@ rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfi
 }
 
 # Global pkgdesc and depends are here so that they will be picked up by AUR
-pkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support, Intel Core2/Newer Xeon optimized.'
+pkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
