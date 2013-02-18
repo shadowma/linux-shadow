@@ -40,7 +40,7 @@ pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.7
-pkgver=3.7.8
+pkgver=3.7.9
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
@@ -73,7 +73,7 @@ source=(
         )
         
 sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
-            '962c431863a060c12d654eb96f453fa862df5d4dbe9ee6db5945c8d1bb543b81'
+            '9f10f53c3cf6dbb4378a3799750b4d0a818f8f5ac112372498d533f4e475cea6'
             '525d31f777e650f0bed604a66e8cbbb2993fe56cd2bc0b36a1dc8f1f8a3d24b7'
             '11183d20458fe662ceffcc2a0caa14200a0ec630e62ec109ad258cb4e005df5e'
             '6dc36a8f33009bb5942dfdfc735661d2306354897b9731b4b0ef2a2615ee2e7d'
