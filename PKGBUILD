@@ -52,7 +52,7 @@ _ckpatchname="patch-3.7-ck${_ckpatchversion}"
 _gcc_patch="kernel-37-gcc47-2.patch"
 _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.7.0-v6"
 _cjkttypath="http://sourceforge.net/projects/cjktty/files/cjktty-for-linux-3.x"
-_cjkttyver="3.5.0"
+_cjkttyver="3.7.0"
 _uksmvernel="0.1.2.2"
 _uksmname="v3.7.ge.1"
 source=(
@@ -79,7 +79,7 @@ sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
             '6dc36a8f33009bb5942dfdfc735661d2306354897b9731b4b0ef2a2615ee2e7d'
             '0551882fb8d401441ff9d4af4bb04c5de84f134a714c66db749d2ce04d7e66c3'
             '3adcd540629f5f0392152ed1740ca36a7c3b1390be14c98e1b9f3c875bfac374'
-            'e114dd57347142ddc625943f4ab685746362de50d8f5fc306112656d8682e17d'
+            '2bcf601d36c943863296ca405bdd0ff40202de47c66f0f26b55f1ba54d3b1baf'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             'b9d79ca33b0b51ff4f6976b7cd6dbb0b624ebf4fbf440222217f8ffc50445de4'
             '3190cffd7bf4906cb85632764d4c5ec22e8da5ccda4daf1f6f8666c6e2c39d52'
