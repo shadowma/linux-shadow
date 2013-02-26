@@ -41,7 +41,7 @@ true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.7
 pkgver=3.7.9
-pkgrel=1
+pkgrel=2
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
 license=('GPL2')
@@ -66,6 +66,7 @@ source=(
 	"${_cjkttypath}/cjktty-for-${_cjkttyver}.patch.xz"
         'linux-shadow.preset'
         'change-default-console-loglevel.patch'
+        'CVE-2013-1763.patch'
         'fat-3.6.x.patch'
         'http://ck.kolivas.org/patches/bfs/3.0/3.7/3.7-bfs426-427.patch'
         'config'
@@ -82,10 +83,11 @@ sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
             '2bcf601d36c943863296ca405bdd0ff40202de47c66f0f26b55f1ba54d3b1baf'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             'b9d79ca33b0b51ff4f6976b7cd6dbb0b624ebf4fbf440222217f8ffc50445de4'
+            'd002d25ffb4619da7ac6a71b6f0849d202fb3cd64c3283d5342cc19f6fa360f4'
             '3190cffd7bf4906cb85632764d4c5ec22e8da5ccda4daf1f6f8666c6e2c39d52'
             '231f4d85b1196507b9201d74694701785d8dd5902158e9444b2ba5e96421f0fe'
-            'f27eb9ded35e8eaf6601f90bddbc21d98b6127968ec7e90a75c2fcbc15fc4665'
-            '3141dabc2dcaea92f6bbcc2e046e513f70766b36786f71dc11d37a65ed36aff2')
+            '0e2dd29abdaf9a805b653ce796a16ee9a5fdabd749b2b82bbd75bb53bfd64526'
+            '0fb3c5d9e1cf0d6cf823a4af1c23626892b661a5f352fd6e1da8c40e5eedff4d')
 build() {
 	cd "${srcdir}/${_srcname}"
 
@@ -101,6 +103,10 @@ build() {
 	# (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
 	patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
 
+	# Fix security vulnetability CVE-2013-1763.patch
+	# https://bugs.archlinux.org/task/34005
+	patch -Np1 -i "${srcdir}/CVE-2013-1763.patch"
+	
 	# fix cosmetic fat issue
 	# https://bugs.archlinux.org/task/32916
 	patch -Np1 -i "${srcdir}/fat-3.6.x.patch"
