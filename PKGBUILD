@@ -40,8 +40,8 @@ pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.7
-pkgver=3.7.9
-pkgrel=2
+pkgver=3.7.10
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
 license=('GPL2')
@@ -66,7 +66,6 @@ source=(
 	"${_cjkttypath}/cjktty-for-${_cjkttyver}.patch.xz"
         'linux-shadow.preset'
         'change-default-console-loglevel.patch'
-        'CVE-2013-1763.patch'
         'fat-3.6.x.patch'
         'http://ck.kolivas.org/patches/bfs/3.0/3.7/3.7-bfs426-427.patch'
         'config'
@@ -74,7 +73,7 @@ source=(
         )
         
 sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
-            '9f10f53c3cf6dbb4378a3799750b4d0a818f8f5ac112372498d533f4e475cea6'
+            'e5db8a0f0fb0a7ad466b4673489c1a438fe7e6482203e34702e7180d6e2e515a'
             '525d31f777e650f0bed604a66e8cbbb2993fe56cd2bc0b36a1dc8f1f8a3d24b7'
             '11183d20458fe662ceffcc2a0caa14200a0ec630e62ec109ad258cb4e005df5e'
             '6dc36a8f33009bb5942dfdfc735661d2306354897b9731b4b0ef2a2615ee2e7d'
@@ -83,7 +82,6 @@ sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
             '2bcf601d36c943863296ca405bdd0ff40202de47c66f0f26b55f1ba54d3b1baf'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             'b9d79ca33b0b51ff4f6976b7cd6dbb0b624ebf4fbf440222217f8ffc50445de4'
-            'd002d25ffb4619da7ac6a71b6f0849d202fb3cd64c3283d5342cc19f6fa360f4'
             '3190cffd7bf4906cb85632764d4c5ec22e8da5ccda4daf1f6f8666c6e2c39d52'
             '231f4d85b1196507b9201d74694701785d8dd5902158e9444b2ba5e96421f0fe'
             '0e2dd29abdaf9a805b653ce796a16ee9a5fdabd749b2b82bbd75bb53bfd64526'
@@ -103,10 +101,6 @@ build() {
 	# (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
 	patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
 
-	# Fix security vulnetability CVE-2013-1763.patch
-	# https://bugs.archlinux.org/task/34005
-	patch -Np1 -i "${srcdir}/CVE-2013-1763.patch"
-	
 	# fix cosmetic fat issue
 	# https://bugs.archlinux.org/task/32916
 	patch -Np1 -i "${srcdir}/fat-3.6.x.patch"
@@ -222,89 +216,88 @@ build() {
 }
 
 package_linux-shadow() {
-_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
-pkgdesc="${_Kpkgdesc}"
-depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
-optdepends=('crda: to set the correct wireless channels of your country')
-provides=("linux-shadow=${pkgver}")
-backup=("etc/mkinitcpio.d/linux-shadow.preset")
-install=linux-shadow.install
+	_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
+	pkgdesc="${_Kpkgdesc}"
+	depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
+	optdepends=('crda: to set the correct wireless channels of your country')
+	provides=("linux-shadow=${pkgver}")
+	backup=("etc/mkinitcpio.d/linux-shadow.preset")
+	install=linux-shadow.install
 
+	cd "${srcdir}/${_srcname}"
 
-cd "${srcdir}/${_srcname}"
+	KARCH=x86
 
-KARCH=x86
+	# get kernel version
+	_kernver="$(make LOCALVERSION= kernelrelease)"
+	_basekernel=${_kernver%%-*}
+	_basekernel=${_basekernel%.*}
 
-# get kernel version
-_kernver="$(make LOCALVERSION= kernelrelease)"
-_basekernel=${_kernver%%-*}
-_basekernel=${_basekernel%.*}
+	mkdir -p "${pkgdir}"/{lib/modules,lib/firmware,boot}
+	make LOCALVERSION= INSTALL_MOD_PATH="${pkgdir}" modules_install
+	cp arch/$KARCH/boot/bzImage "${pkgdir}/boot/vmlinuz-linux-shadow"
 
-mkdir -p "${pkgdir}"/{lib/modules,lib/firmware,boot}
-make LOCALVERSION= INSTALL_MOD_PATH="${pkgdir}" modules_install
-cp arch/$KARCH/boot/bzImage "${pkgdir}/boot/vmlinuz-linux-shadow"
+	# add vmlinux
+	install -D -m644 vmlinux "${pkgdir}/usr/src/linux-${_kernver}/vmlinux"
 
-# add vmlinux
-install -D -m644 vmlinux "${pkgdir}/usr/src/linux-${_kernver}/vmlinux"
+	# install fallback mkinitcpio.conf file and preset file for kernel
+	install -D -m644 "${srcdir}/linux-shadow.preset" "${pkgdir}/etc/mkinitcpio.d/linux-shadow.preset"
 
-# install fallback mkinitcpio.conf file and preset file for kernel
-install -D -m644 "${srcdir}/linux-shadow.preset" "${pkgdir}/etc/mkinitcpio.d/linux-shadow.preset"
+	# set correct depmod command for install
+	sed \
+		-e  "s/KERNEL_NAME=.*/KERNEL_NAME=-shadow/g" \
+		-e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
+		-i "${startdir}/linux-shadow.install"
+	sed \
+		-e "1s|'linux.*'|'linux-shadow'|" \
+		-e "s|ALL_kver=.*|ALL_kver=\"/boot/vmlinuz-linux-shadow\"|" \
+		-e "s|default_image=.*|default_image=\"/boot/initramfs-linux-shadow.img\"|" \
+		-e "s|fallback_image=.*|fallback_image=\"/boot/initramfs-linux-shadow-fallback.img\"|" \
+		-i "${pkgdir}/etc/mkinitcpio.d/linux-shadow.preset"
 
-# set correct depmod command for install
-sed \
-	-e  "s/KERNEL_NAME=.*/KERNEL_NAME=-shadow/g" \
-	-e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
-	-i "${startdir}/linux-shadow.install"
-sed \
-	-e "1s|'linux.*'|'linux-shadow'|" \
-	-e "s|ALL_kver=.*|ALL_kver=\"/boot/vmlinuz-linux-shadow\"|" \
-	-e "s|default_image=.*|default_image=\"/boot/initramfs-linux-shadow.img\"|" \
-	-e "s|fallback_image=.*|fallback_image=\"/boot/initramfs-linux-shadow-fallback.img\"|" \
-	-i "${pkgdir}/etc/mkinitcpio.d/linux-shadow.preset"
+	# remove build and source links
+	rm -f "${pkgdir}"/lib/modules/${_kernver}/{source,build}
+	# remove the firmware
+	rm -rf "${pkgdir}/lib/firmware"
+	# gzip -9 all modules to save 100MB of space
+	find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
+	# make room for external modules
+	ln -s "../extramodules-${_basekernel}${_kernelname:--shadow}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+	# add real version for building modules and running depmod from post_install/upgrade
+	mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}"
+	echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}/version"
 
-# remove build and source links
-rm -f "${pkgdir}"/lib/modules/${_kernver}/{source,build}
-# remove the firmware
-rm -rf "${pkgdir}/lib/firmware"
-# gzip -9 all modules to save 100MB of space
-find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
-# make room for external modules
-ln -s "../extramodules-${_basekernel}${_kernelname:--shadow}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
-# add real version for building modules and running depmod from post_install/upgrade
-mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}"
-echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}/version"
+	# Now we call depmod...
+	depmod -b "$pkgdir" -F System.map "$_kernver"
 
-# Now we call depmod...
-depmod -b "$pkgdir" -F System.map "$_kernver"
-
-# move module tree /lib -> /usr/lib
-mv "$pkgdir/lib" "$pkgdir/usr"
+	# move module tree /lib -> /usr/lib
+	mv "$pkgdir/lib" "$pkgdir/usr"
 }
 
 package_linux-shadow-headers() {
-_Hpkgdesc='Header files and scripts to build modules for linux-shadow.'
-pkgdesc="${_Hpkgdesc}"
-depends=('linux-shadow') # added to keep kernel and headers packages matched
-provides=("linux-shadow-headers=${pkgver}" "linux-headers=${pkgver}")
+	_Hpkgdesc='Header files and scripts to build modules for linux-shadow.'
+	pkgdesc="${_Hpkgdesc}"
+	depends=('linux-shadow') # added to keep kernel and headers packages matched
+	provides=("linux-shadow-headers=${pkgver}" "linux-headers=${pkgver}")
 
-install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
+	install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
 
-cd "${pkgdir}/usr/lib/modules/${_kernver}"
-ln -sf ../../../src/linux-${_kernver} build
+	cd "${pkgdir}/usr/lib/modules/${_kernver}"
+	ln -sf ../../../src/linux-${_kernver} build
 
-cd "${srcdir}/${_srcname}"
-install -D -m644 Makefile \
-	"${pkgdir}/usr/src/linux-${_kernver}/Makefile"
-install -D -m644 kernel/Makefile \
-	"${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile"
-install -D -m644 .config \
-	"${pkgdir}/usr/src/linux-${_kernver}/.config"
+	cd "${srcdir}/${_srcname}"
+	install -D -m644 Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/Makefile"
+	install -D -m644 kernel/Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile"
+	install -D -m644 .config \
+		"${pkgdir}/usr/src/linux-${_kernver}/.config"
 
-mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include"
 
-for i in acpi asm-generic config crypto drm generated linux math-emu \
-	media net pcmcia scsi sound trace uapi video xen; do
-cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
+	for i in acpi asm-generic config crypto drm generated linux math-emu \
+		media net pcmcia scsi sound trace uapi video xen; do
+		cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
 	done
 
 	# copy arch includes for external modules
@@ -372,7 +365,10 @@ cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
 	# and...
 	# http://bugs.archlinux.org/task/11194
 	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
-	[[ -e include/config/dvb/ ]] && cp include/config/dvb/*.h "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" 
+	
+	# this line will allow the package to build if a user disables the dvb shit
+	    [[ -d include/config/dvb ]] && find include/config/dvb -name '*.h' -exec cp {} \
+	"${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" \;
 
 	# add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
 	# in reference to:
@@ -415,10 +411,11 @@ cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
 		*application/x-executable*) # Binaries
 			/usr/bin/strip ${STRIP_BINARIES} "${binary}";;
 	esac
-done
 
-# remove unneeded architectures
-rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
+	done
+
+	# remove unneeded architectures
+	rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
 }
 
 # Global pkgdesc and depends are here so that they will be picked up by AUR
