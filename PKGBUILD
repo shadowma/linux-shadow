@@ -1,3 +1,6 @@
+# Contributor: graysky <graysky AT archlinux DOT us>
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: Thomas Baechler <thomas@archlinux.org>
 # Maintainer: Shadow Ma <i at shadow dot ma>
 
 ### PATCH AND BUILD OPTIONS
@@ -7,8 +10,7 @@ _makenconfig=yes		# Tweak kernel options prior to a build via nconfig
 _localmodcfg=		# Compile ONLY probed modules
 _use_current=		# Use the current kernel's .config file
 _BFQ_enable_=yes		# Enable BFQ as the default I/O scheduler
-_NUMA_off=yes		# Disable NUMA in kernel config
-MAKEFLAGS=
+_NUMA_disable_=yes		# Disable NUMA in kernel config
 
 ### DOCS
 
@@ -30,17 +32,17 @@ MAKEFLAGS=
 # config options.  NOT recommended when a new kernel is released, but again, convenient for package bumps.
 
 # DETAILS FOR _BFQ_enable=
-# Alternative I/O scheduler by Paolo.  For more, see: http://algo.ing.unimo.it/people/paolo/disk_sched/
+# Alternative I/O scheduler by Paolo.  For more, see: http://www.algogroup.unimo.it/people/paolo/disk_sched/
 
-# DRTAILS FOR _NUMA_off=yes
+# DRTAILS FOR _NUMA_disable=
 # Since 99.9% of users do not have multiple CPUs but do have multiple cores in one CPU
 # see, https://bugs.archlinux.org/task/31187
 
 pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
-_srcname=linux-3.7
-pkgver=3.7.10
+_srcname=linux-3.8
+pkgver=3.8.3
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
@@ -48,44 +50,44 @@ license=('GPL2')
 options=('!strip')
 #PKGEXT='.pkg.tar' ##less time
 _ckpatchversion=1
-_ckpatchname="patch-3.7-ck${_ckpatchversion}"
-_gcc_patch="kernel-37-gcc47-2.patch"
-_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.7.0-v6"
+_ckpatchname="patch-3.8-ck${_ckpatchversion}"
+_gcc_patch="kernel-38-gcc47-1.patch"
+_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.8.0-v6"
 _cjkttypath="http://sourceforge.net/projects/cjktty/files/cjktty-for-linux-3.x"
-_cjkttyver="3.7.0"
+_cjkttyver="3.8.1"
 _uksmvernel="0.1.2.2"
-_uksmname="v3.7.ge.1"
+_uksmname="v3.8.ge.3"
 source=(
         "http://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
         "http://www.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.xz"
-        "http://ck.kolivas.org/patches/3.0/3.7/3.7-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+        "http://ck.kolivas.org/patches/3.0/3.8/3.8-ck${_ckpatchversion}/${_ckpatchname}.bz2"
         "http://repo-ck.com/source/gcc_patch/${_gcc_patch}.gz"
         "http://kerneldedup.org/download/uksm/${_uksmvernel}/uksm-${_uksmvernel}-for-${_uksmname}.patch"
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6-3.7.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v6-I-O-sched-for-3.7.patch"
-	"${_cjkttypath}/cjktty-for-${_cjkttyver}.patch.xz"
+        "${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6-3.8.patch"
+        "${_bfqpath}/0002-block-introduce-the-BFQ-v6-I-O-sched-for-3.8.patch"
+        "${_cjkttypath}/cjktty-for-${_cjkttyver}.patch.xz"
         'linux-shadow.preset'
         'change-default-console-loglevel.patch'
-        'fat-3.6.x.patch'
-        'http://ck.kolivas.org/patches/bfs/3.0/3.7/3.7-bfs426-427.patch'
         'config'
         'config.x86_64'
+        'drm-i915-enable-irqs-earlier-when-resuming.patch'
+        'drm-i915-reorder-setup-sequence-to-have-irqs-for-output-setup.patch'
         )
         
-sha256sums=('60a64d0bf76eeec3355f115c577935757b84629c8c129ce5b8bb02075f6b9458'
-            'e5db8a0f0fb0a7ad466b4673489c1a438fe7e6482203e34702e7180d6e2e515a'
-            '525d31f777e650f0bed604a66e8cbbb2993fe56cd2bc0b36a1dc8f1f8a3d24b7'
-            '11183d20458fe662ceffcc2a0caa14200a0ec630e62ec109ad258cb4e005df5e'
-            '6dc36a8f33009bb5942dfdfc735661d2306354897b9731b4b0ef2a2615ee2e7d'
-            '0551882fb8d401441ff9d4af4bb04c5de84f134a714c66db749d2ce04d7e66c3'
-            '3adcd540629f5f0392152ed1740ca36a7c3b1390be14c98e1b9f3c875bfac374'
-            '2bcf601d36c943863296ca405bdd0ff40202de47c66f0f26b55f1ba54d3b1baf'
+sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
+            '02b70097dcfbce05ccbfbd5fae6449a811b26a776f89d3c2fdd155b7d086ea82'
+            '52ccddf933b968beb706781f97a1cecb37e29339ff833aa53366756ec3d01d7e'
+            '4b8b51a298768048735914e747affe39f58d47d20833cd90fdc002559c719c6a'
+            'de7a2b067ae348b2f5fb4612eb0b841aa10e0e9501972a82cab6ee8494786d29'
+            'aadabe5380d48bf742794dda903dfcf70f232f4cdadf719c78d34655e11835a2'
+            '162561c41e9c34afa27de02e748e99384efd8aefaa9d12e32f24d84905c161c5'
+            '8758415bdbb9a90e7fa66ac25d70a226465619ff318d6d5d2b8f2ff4f5a42805'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
-            'b9d79ca33b0b51ff4f6976b7cd6dbb0b624ebf4fbf440222217f8ffc50445de4'
-            '3190cffd7bf4906cb85632764d4c5ec22e8da5ccda4daf1f6f8666c6e2c39d52'
-            '231f4d85b1196507b9201d74694701785d8dd5902158e9444b2ba5e96421f0fe'
-            '0e2dd29abdaf9a805b653ce796a16ee9a5fdabd749b2b82bbd75bb53bfd64526'
-            '0fb3c5d9e1cf0d6cf823a4af1c23626892b661a5f352fd6e1da8c40e5eedff4d')
+            '56bd99e54429a25a144f2d221718b67f516344ffd518fd7dcdd752206ec5be69'
+            'd88d8dcbfa153cabaa6f3b4afd1569b281537c2e160a57274072650df4fd0587'
+            '98781d8f0237aa83326147c6344467da0639fddd57e6d0f3a72155efeb2ef8a6'
+            '5bb4beb1f97348887ae20c4f01b3c80ba29982d650ae4cc3a7c3bc1e5a9c1735'
+            'a21ae0c6bea68cef46074c913e38b5320ef3b3506d8963faa5cf753ef03c7c21')
 build() {
 	cd "${srcdir}/${_srcname}"
 
@@ -93,24 +95,21 @@ build() {
 	# msg "Patching source upstream patch set to $pkgver"
 	patch -p1 -i "${srcdir}/patch-${pkgver}"
 
-	# add latest fixes from stable queue, if needed
-	# http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
-
 	# set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
 	# remove this when a Kconfig knob is made available by upstream
 	# (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
 	patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
 
-	# fix cosmetic fat issue
-	# https://bugs.archlinux.org/task/32916
-	patch -Np1 -i "${srcdir}/fat-3.6.x.patch"
+	# revert 2 patches which breaks displays
+	# FS 34327
+	patch -Rp1 -i "${srcdir}/drm-i915-enable-irqs-earlier-when-resuming.patch"
+	patch -Rp1 -i "${srcdir}/drm-i915-reorder-setup-sequence-to-have-irqs-for-output-setup.patch"
 
 	### Patch source with ck patchset with BFS
 	# Fix double name in EXTRAVERSION
 	sed -i -re "s/^(.EXTRAVERSION).*$/\1 = /" "${srcdir}/${_ckpatchname}"
-	msg "Patching source with ck1 including bfs v0.427"
+	msg "Patching source with ck1 including bfs v0.428"
 	patch -Np1 -i "${srcdir}/${_ckpatchname}"
-	patch -Np1 -i "${srcdir}/3.7-bfs426-427.patch"
 
 	### Patch source to enable more gcc CPU optimizatons via the make nconfig
 	patch -Np1 -i "${srcdir}/${_gcc_patch}"
@@ -170,7 +169,7 @@ build() {
 
 	# disable NUMA since 99.9% of users do not have multiple CPUs but do have multiple cores in one CPU
 	# see, https://bugs.archlinux.org/task/31187
-	if [ -n "$_NUMA_off" ]; then
+	if [ -n "$_NUMA_disable_" ]; then
 		if [ "${CARCH}" = "x86_64" ]; then
 			sed -i -e 's/CONFIG_NUMA=y/# CONFIG_NUMA is not set/' \
 				-i -e '/CONFIG_AMD_NUMA=y/d' \
@@ -216,7 +215,7 @@ build() {
 }
 
 package_linux-shadow() {
-	_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
+	_Kpkgdesc='The Linux Kernel and modules with BFS, BFQ and cjktty support, Intel Core2/Newer Xeon optimized.'
 	pkgdesc="${_Kpkgdesc}"
 	depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
 	optdepends=('crda: to set the correct wireless channels of your country')
@@ -262,10 +261,10 @@ package_linux-shadow() {
 	# gzip -9 all modules to save 100MB of space
 	find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
 	# make room for external modules
-	ln -s "../extramodules-${_basekernel}${_kernelname:--shadow}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+	ln -s "../extramodules-${_basekernel}${_kernelname:shadow}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
 	# add real version for building modules and running depmod from post_install/upgrade
-	mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}"
-	echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--shadow}/version"
+	mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:shadow}"
+	echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:shadow}/version"
 
 	# Now we call depmod...
 	depmod -b "$pkgdir" -F System.map "$_kernver"
@@ -367,7 +366,7 @@ package_linux-shadow-headers() {
 	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
 	
 	# this line will allow the package to build if a user disables the dvb shit
-	    [[ -d include/config/dvb ]] && find include/config/dvb -name '*.h' -exec cp {} \
+	[[ -d include/config/dvb ]] && find include/config/dvb -name '*.h' -exec cp {} \
 	"${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" \;
 
 	# add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
@@ -419,4 +418,4 @@ package_linux-shadow-headers() {
 }
 
 # Global pkgdesc and depends are here so that they will be picked up by AUR
-pkgdesc='The Linux Kernel and modules with BFS, BFQ, cjktty and uksm support.'
+pkgdesc='The Linux Kernel and modules with BFS, BFQ and cjktty support, Intel Core2/Newer Xeon optimized.'
