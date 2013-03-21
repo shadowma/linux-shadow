@@ -42,7 +42,7 @@ pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.8
-pkgver=3.8.3
+pkgver=3.8.4
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
@@ -70,12 +70,10 @@ source=(
         'change-default-console-loglevel.patch'
         'config'
         'config.x86_64'
-        'drm-i915-enable-irqs-earlier-when-resuming.patch'
-        'drm-i915-reorder-setup-sequence-to-have-irqs-for-output-setup.patch'
         )
         
 sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
-            '02b70097dcfbce05ccbfbd5fae6449a811b26a776f89d3c2fdd155b7d086ea82'
+            '6609b846a01fc4e03ec1f12c6e965297d42e18b3fd13a1dfb0b2f68d18e7e204'
             '52ccddf933b968beb706781f97a1cecb37e29339ff833aa53366756ec3d01d7e'
             '4b8b51a298768048735914e747affe39f58d47d20833cd90fdc002559c719c6a'
             'de7a2b067ae348b2f5fb4612eb0b841aa10e0e9501972a82cab6ee8494786d29'
@@ -85,9 +83,7 @@ sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             '56bd99e54429a25a144f2d221718b67f516344ffd518fd7dcdd752206ec5be69'
             'd88d8dcbfa153cabaa6f3b4afd1569b281537c2e160a57274072650df4fd0587'
-            '98781d8f0237aa83326147c6344467da0639fddd57e6d0f3a72155efeb2ef8a6'
-            '5bb4beb1f97348887ae20c4f01b3c80ba29982d650ae4cc3a7c3bc1e5a9c1735'
-            'a21ae0c6bea68cef46074c913e38b5320ef3b3506d8963faa5cf753ef03c7c21')
+            '98781d8f0237aa83326147c6344467da0639fddd57e6d0f3a72155efeb2ef8a6')
 build() {
 	cd "${srcdir}/${_srcname}"
 
@@ -99,11 +95,6 @@ build() {
 	# remove this when a Kconfig knob is made available by upstream
 	# (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
 	patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
-
-	# revert 2 patches which breaks displays
-	# FS 34327
-	patch -Rp1 -i "${srcdir}/drm-i915-enable-irqs-earlier-when-resuming.patch"
-	patch -Rp1 -i "${srcdir}/drm-i915-reorder-setup-sequence-to-have-irqs-for-output-setup.patch"
 
 	### Patch source with ck patchset with BFS
 	# Fix double name in EXTRAVERSION
