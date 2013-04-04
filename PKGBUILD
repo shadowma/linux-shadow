@@ -82,7 +82,7 @@ sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
             '8758415bdbb9a90e7fa66ac25d70a226465619ff318d6d5d2b8f2ff4f5a42805'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             '56bd99e54429a25a144f2d221718b67f516344ffd518fd7dcdd752206ec5be69'
-            'e3c31bd12f8c8d88998b6481d84a76f5ade9783d0139662bccdb1adfec903dad'
+            'a0d5d07c55189e00bb720aacc3e6132dc92a8070cc181ae872ca2a340ee33a24'
             'bae94164f7fe5e93deadb8076df7e7bea91e6c9767b4ee2a162fcffb7f0cf08c')
 build() {
 	cd "${srcdir}/${_srcname}"
