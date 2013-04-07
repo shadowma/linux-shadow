@@ -42,7 +42,7 @@ pkgname=linux-shadow
 true && pkgname=(linux-shadow linux-shadow-headers)
 _kernelname=-shadow
 _srcname=linux-3.8
-pkgver=3.8.5
+pkgver=3.8.6
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://shadow.ma/"
@@ -73,7 +73,7 @@ source=(
         )
         
 sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
-            '4f04340eab5eba355da50a003977f3bb3e570e257e29f911c57bf79f65337d6e'
+            '19b2748e9c11c6ca7672dc0b945725914a7481fad8c5f0fb5c1658115f04c72a'
             '52ccddf933b968beb706781f97a1cecb37e29339ff833aa53366756ec3d01d7e'
             '4b8b51a298768048735914e747affe39f58d47d20833cd90fdc002559c719c6a'
             'de7a2b067ae348b2f5fb4612eb0b841aa10e0e9501972a82cab6ee8494786d29'
@@ -82,8 +82,8 @@ sha256sums=('e070d1bdfbded5676a4f374721c63565f1c969466c5a3e214004a136b583184b'
             '8758415bdbb9a90e7fa66ac25d70a226465619ff318d6d5d2b8f2ff4f5a42805'
             'bba6e073b31ef3af4fa5dcec66862fe254f2e504f121b784ab1bf6c9ede595ad'
             '56bd99e54429a25a144f2d221718b67f516344ffd518fd7dcdd752206ec5be69'
-            'a0d5d07c55189e00bb720aacc3e6132dc92a8070cc181ae872ca2a340ee33a24'
-            'bae94164f7fe5e93deadb8076df7e7bea91e6c9767b4ee2a162fcffb7f0cf08c')
+            '1ea7e1aaee8de0e5203ff4247c7f550527812c2f7580ed5fc25a1d3b4643dc04'
+            'e0e87e26be558064fd80c88707b5b1b5f833150cb83303eb66bf2e09edf26eef')
 build() {
 	cd "${srcdir}/${_srcname}"
 
